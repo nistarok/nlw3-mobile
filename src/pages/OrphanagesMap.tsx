@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Feather } from '@expo/vector-icons'
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
@@ -7,6 +7,7 @@ import mapMarker from '../images/map-marker.png'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { RectButton } from 'react-native-gesture-handler';
 import api from '../services/api';
+import { useAuth } from "../contexts/auth";
 
 
 interface Orphanage {
@@ -17,6 +18,9 @@ interface Orphanage {
 }
 
 export default function OrphanagesMap() {
+  const { signOut } = useAuth();
+
+
   const navigation = useNavigation();
 
   const [orphanages, setOrphanages] = useState<Orphanage[]>([]);
@@ -25,10 +29,14 @@ export default function OrphanagesMap() {
     api.get('/orphanages').then(response => {
       setOrphanages(response.data)
     });
-  }, []);
+  });
 
   function handleNavigateOrphanageDetails(id: number) {
     navigation.navigate('OrphanageDetails', { id })
+  }
+
+  function handleLogOut() {
+    signOut()
   }
 
   function handleNavigateToCreateOrphanage() {
@@ -72,6 +80,11 @@ export default function OrphanagesMap() {
             )
           })}
         </MapView>
+        <View style={styles.top}>
+          <RectButton style={styles.createOrphanateButton} onPress={handleLogOut}>
+            <Feather name="log-out" size={20} color="#FFF" />
+          </RectButton>
+        </View>
         <View style={styles.footer}>
           <Text style={styles.footerText}>{orphanages.length} orfanatos encontrados</Text>
           <RectButton style={styles.createOrphanateButton} onPress={handleNavigateToCreateOrphanage}>
@@ -142,5 +155,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
 
+  },
+  top: {
+    position: "absolute",
+    right: 4,
+    top: 14,
+
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    height: 56,
+
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+
+    elevation: 3,
   }
 });
