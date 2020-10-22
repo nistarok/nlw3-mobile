@@ -9,7 +9,7 @@ interface AuthContextData {
   user: object | null;
   loading: boolean;
   signIn(): Promise<void>;
-  signOut(): Promise<void>;
+  signOut(): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as  AuthContextData);
@@ -47,7 +47,6 @@ const AuthProvider: React.FC = ({ children }) => {
 
   async function signOut() {
     await AsyncStorage.clear();
-
     setUser(null);
   }
 
